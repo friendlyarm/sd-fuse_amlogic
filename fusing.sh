@@ -158,6 +158,15 @@ if [ ! -f ${PARTMAP} ]; then
 	exit 1
 fi
 
+# set uboot env, like cmdline
+if [ -f ./${TARGET_OS}/env.conf ]; then
+	${FW_SETENV} /dev/${DEV_NAME} -s ./${TARGET_OS}/env.conf
+elif [ -f ${BOOT_DIR}/${TARGET_OS}_env.conf ]; then
+	${FW_SETENV} /dev/${DEV_NAME} -s ${BOOT_DIR}/${TARGET_OS}_env.conf
+else
+	${FW_SETENV} /dev/${DEV_NAME} -s ${BOOT_DIR}/generic_env.conf
+fi
+
 # write ext4 image
 ${SD_UPDATE} -d /dev/${DEV_NAME} -p ${PARTMAP}
 if [ $? -ne 0 ]; then
