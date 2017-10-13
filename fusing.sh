@@ -191,6 +191,23 @@ else
 	fi
 fi
 
+# ----------------------------------------------------------
+# Fusing bootloader for eMMC
+
+[ -f ./${TARGET_OS}/u-boot.bin ] && BL_BIN=./${TARGET_OS}/u-boot.bin
+
+if [ "x${3,,}" = "xemmc" ]; then
+	echo "---------------------------------"
+	echo "bootloader fusing for eMMC"
+	dd if=${BL_BIN} of=/dev/${DEV_NAME} bs=256 count=1
+	dd if=${BL_BIN} of=/dev/${DEV_NAME} bs=512 skip=1 seek=1
+
+	#<Message Display>
+	echo "---------------------------------"
+	echo "Bootloader image is fused successfully."
+	echo ""
+fi
+
 echo "---------------------------------"
 echo "${TARGET_OS^} is fused successfully."
 echo "All done."

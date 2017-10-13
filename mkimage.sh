@@ -29,6 +29,7 @@ fi
 
 true ${SOC:=s905}
 true ${TARGET_OS:=${1,,}}
+true ${MEDIA:=${2,,}}
 
 case ${TARGET_OS} in
 debian | core-qte | rtmsystem | eflasher)
@@ -40,8 +41,13 @@ esac
 # ----------------------------------------------------------
 # Create zero file
 
-RAW_FILE=${SOC}-${TARGET_OS}-sd4g-$(date +%Y%m%d).img
-RAW_SIZE_MB=3900
+if [ "${MEDIA}" = "emmc" ]; then
+	RAW_SIZE_MB=7600
+else
+	RAW_SIZE_MB=3900
+	MEDIA=sd4g
+fi
+RAW_FILE=${SOC}-${TARGET_OS}-${MEDIA}-$(date +%Y%m%d).img
 
 BLOCK_SIZE=1024
 let RAW_SIZE=(${RAW_SIZE_MB}*1000*1000)/${BLOCK_SIZE}
@@ -87,7 +93,7 @@ fi
 
 true ${SD_FUSING:=./fusing.sh}
 
-${SD_FUSING} ${LOOP_DEVICE} ${TARGET_OS}
+${SD_FUSING} ${LOOP_DEVICE} ${TARGET_OS} ${MEDIA}
 RET=$?
 
 if [ "x${TARGET_OS}" = "xeflasher" ]; then
